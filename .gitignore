@@ -1,11 +1,31 @@
-node_modules
-.env
-coverage
-coverage.json
-typechain
-typechain-types
 
-#Hardhat files
-cache
-artifacts
+/cache
+**/cache
+out
+**/out
+/data
+**/data
+/node_modules
+**/node_modules
+/build
+**/build
+/dist
+**/dist
+**/dist-newstyle
+/.env
+**/.env
+*.env
+lerna-debug.log
+
+*.ignore.*
+yarn-error.log
+package-lock.json
+.DS_Store
+.idea
+foundry.toml
+
+.vscode/
+*-workspace
+.npmrc
+
 

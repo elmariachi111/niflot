@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import {ERC721Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 import {ISuperfluid, ISuperToken, ISuperApp} from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
 import {IConstantFlowAgreementV1} from "@superfluid-finance/ethereum-contracts/contracts/interfaces/agreements/IConstantFlowAgreementV1.sol";
@@ -14,15 +14,14 @@ struct SalaryPledge {
     uint256 untilTs;
 }
 
-// receives salaries by DAO
-contract Niflot is ERC721Upgradeable, OwnableUpgradeable {
+contract Niflot is ERC721, Ownable {
     using CFAv1Library for CFAv1Library.InitData;
 
     ISuperfluid private _host;
-    ISuperToken public _acceptedToken; // accepted token
+    ISuperToken public _acceptedToken;
     IConstantFlowAgreementV1 private _cfa; // the stored constant flow agreement class address
 
-    CFAv1Library.InitData public cfaV1; //initialize cfaV1 variable
+    CFAv1Library.InitData public cfaV1;
 
     event NFTIssued(uint256 tokenId, address receiver, int96 flowRate);
 
@@ -32,15 +31,12 @@ contract Niflot is ERC721Upgradeable, OwnableUpgradeable {
 
     uint256 public nextId;
 
-    function initialize(
+    constructor(
         ISuperfluid host,
         IConstantFlowAgreementV1 cfa,
         ISuperToken acceptedToken,
         string memory name_
-    ) public initializer {
-        __Ownable_init();
-        __ERC721_init(name_, "NFLOT");
-
+    ) Ownable() ERC721(name_, "NFLOT") {
         _host = host;
         _cfa = cfa;
         _acceptedToken = acceptedToken;
@@ -51,10 +47,9 @@ contract Niflot is ERC721Upgradeable, OwnableUpgradeable {
         assert(address(_cfa) != address(0));
         assert(address(_acceptedToken) != address(0));
 
-        //initialize InitData struct, and set equal to cfaV1
         cfaV1 = CFAv1Library.InitData(
             host,
-            //here, we are deriving the address of the CFA using the host contract
+            // derive the address of the CFA using the host contract
             IConstantFlowAgreementV1(
                 address(
                     host.getAgreementClass(

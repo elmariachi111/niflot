@@ -1,11 +1,8 @@
 import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
-import "@nomiclabs/hardhat-web3";
 import "@typechain/hardhat";
-import "@nomiclabs/hardhat-ethers";
-import "@nomiclabs/hardhat-waffle";
 
 const config: HardhatUserConfig = {
+  networks: {},
   solidity: "0.8.15",
   typechain: {
     outDir: "src/typechain",
