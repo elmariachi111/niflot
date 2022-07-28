@@ -1,5 +1,5 @@
 //@ts-ignore
-import hre, {ethers, web3} from "hardhat";
+import hre, { ethers, web3 } from "hardhat";
 
 //@ts-ignore
 import deployFramework from "@superfluid-finance/ethereum-contracts/scripts/deploy-framework";
@@ -9,29 +9,29 @@ import deployTestToken from "@superfluid-finance/ethereum-contracts/scripts/depl
 import deploySuperToken from "@superfluid-finance/ethereum-contracts/scripts/deploy-super-token";
 
 const errorHandler = (err: any) => {
-    if (err) throw err;
+  if (err) throw err;
 };
 
 async function main() {
-    const [admin] = await ethers.getSigners();
+  const [admin] = await ethers.getSigners();
 
-    const fwResult = await deployFramework(errorHandler, {
-        web3,
-        from: admin.address,
-    });
-    const fDAI = await deployTestToken(errorHandler, [":", "fDAI"], {
-        web3,
-        from: admin.address,
-    });
-    const fDAIx = await deploySuperToken(errorHandler, [":", "fDAI"], {
-        web3,
-        from: admin.address,
-    });
+  const fwResult = await deployFramework(errorHandler, {
+    web3,
+    from: admin.address,
+  });
+  const fDAI = await deployTestToken(errorHandler, [":", "fDAI"], {
+    web3,
+    from: admin.address,
+  });
+  const fDAIx = await deploySuperToken(errorHandler, [":", "fDAI"], {
+    web3,
+    from: admin.address,
+  });
 
-    console.log(fwResult, process.env.RESOLVER_ADDRESS, fDAI, fDAIx);
+  console.log(fwResult, process.env.RESOLVER_ADDRESS, fDAI, fDAIx);
 }
 
 main().catch((error) => {
-    console.error(error);
-    process.exitCode = 1;
+  console.error(error);
+  process.exitCode = 1;
 });

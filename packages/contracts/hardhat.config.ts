@@ -1,5 +1,8 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@typechain/hardhat";
+import "@nomiclabs/hardhat-ethers";
+import "@nomiclabs/hardhat-web3";
+//import { mochaRootHooks } from "./test/hooks";
 
 const config: HardhatUserConfig = {
   networks: {},
@@ -11,6 +14,10 @@ const config: HardhatUserConfig = {
     //externalArtifacts: ['externalArtifacts/*.json'], // optional array of glob patterns with external artifacts to process (for example external libs from node_modules)
     //dontOverrideCompile: false // defaults to false
   },
+  // mocha: {
+  //   require: ["ts-node/register"],
+  //   rootHooks: mochaRootHooks,
+  // },
 };
 
 export default config;
