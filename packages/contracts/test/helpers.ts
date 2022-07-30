@@ -25,6 +25,9 @@ export async function preTest(): Promise<{
   //get accounts from hardhat
   const accounts = await ethers.getSigners();
   //deploy the framework
+  process.env.RESET_SUPERFLUID_FRAMEWORK = "true";
+  process.env.RESET_TOKEN = "true";
+
   await deployFramework(errorHandler, {
     web3,
     from: accounts[0].address,
@@ -71,7 +74,6 @@ export async function preTest(): Promise<{
     account: accounts[0].address,
     providerOrSigner: accounts[0],
   });
-  console.log("admin's daix balance: ", daiBal);
 
   return {
     sf,
