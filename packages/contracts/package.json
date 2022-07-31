@@ -7,7 +7,8 @@
   "devDependencies": {
     "@typechain/ethers-v5": "^10.1.0",
     "@typechain/hardhat": "^6.1.2",
-    "hardhat": "^2.10.1"
+    "hardhat": "^2.10.1",
+    "solidity-coverage": "^0.7.21"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "^0.33.0",
