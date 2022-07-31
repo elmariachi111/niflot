@@ -2,7 +2,7 @@ import { Framework, WrapperSuperToken } from "@superfluid-finance/sdk-core";
 import { expect } from "chai";
 import { ethers, web3 } from "hardhat";
 
-import daiABI from "./abis/dai.abi.json";
+import daiABI from "../abis/dai.abi.json";
 //@ts-ignore
 import deployFramework from "@superfluid-finance/ethereum-contracts/scripts/deploy-framework";
 //@ts-ignore

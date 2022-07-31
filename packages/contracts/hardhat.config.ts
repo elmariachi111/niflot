@@ -1,8 +1,10 @@
+import { config as dotenv } from "dotenv";
 import { HardhatUserConfig } from "hardhat/config";
 import "@typechain/hardhat";
 import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-web3";
-//import { mochaRootHooks } from "./test/hooks";
+
+dotenv();
 
 const config: HardhatUserConfig = {
   networks: {},

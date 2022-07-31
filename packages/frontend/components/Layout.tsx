@@ -3,9 +3,10 @@ import { Button, Container, Flex, Text } from "@chakra-ui/react";
 import { useWeb3 } from "./context/Web3Context";
 
 export default function Layout({ children }) {
-  const { connect, account } = useWeb3();
+  const { connect, account, chainId } = useWeb3();
   return (
     <Container>
+      <Text>{chainId}</Text>
       {account ? (
         <Text>{account}</Text>
       ) : (
