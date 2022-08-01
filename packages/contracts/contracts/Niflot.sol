@@ -46,6 +46,9 @@ contract Niflot is ERC721, Ownable {
     //todo: unused, do we need it anyway?!
     mapping(ISuperToken => bool) private _acceptedTokens;
 
+    //origin => investor => bought flowrate
+    mapping(address => mapping(address => int96)) private _investments;
+
     uint256 public nextId;
 
     constructor(ISuperfluid host) Ownable() ERC721("Niflot", "NFLOT") {
@@ -77,42 +80,7 @@ contract Niflot is ERC721, Ownable {
         _acceptedTokens[token] = accept;
     }
 
-    function mint(
-        ISuperToken token,
-        address origin,
-        uint256 durationInSeconds
-    ) external {
-        //todo check if token is in _acceptedTokens
-        (, int96 flowrate, , ) = _cfa.getFlow(token, origin, msg.sender);
-        require(flowrate > 0, "origin isn't streaming to you");
-
-        //delete original stream
-        cfaV1.deleteFlowByOperator(origin, msg.sender, token);
-        cfaV1._increaseFlowByOperator(
-            _cfa,
-            token,
-            origin,
-            address(this),
-            flowrate
-        );
-
-        niflots[nextId] = NiflotMetadata({
-            origin: origin,
-            receiver: msg.sender,
-            flowrate: flowrate,
-            token: token,
-            duration: durationInSeconds,
-            started: 0
-        });
-
-        //will start streaming from niflot to msg.sender / receiver
-        _mint(msg.sender, nextId);
-        nextId += 1;
-    }
-
     function burn(uint256 tokenId) external {
-        //check that sender owns token or
-        //owner is receiver and lending time has passed
         require(
             niflots[tokenId].started == 0 || isMature(tokenId),
             "cant burn a non mature niflot"
@@ -127,24 +95,34 @@ contract Niflot is ERC721, Ownable {
         );
     }
 
-    function _recoverOriginalFlow(uint256 tokenId) internal {
-        NiflotMetadata memory meta = niflots[tokenId];
-        //reduce flowrate from operator to niflot
-        cfaV1._decreaseFlowByOperator(
-            _cfa,
-            meta.token,
-            meta.origin,
-            address(this),
-            meta.flowrate
+    //todo: potentially add a dedicated flowrate so don't have to sell everything at once.
+    function mint(
+        ISuperToken token,
+        address origin,
+        uint256 durationInSeconds
+    ) external {
+        //todo check if token is in _acceptedTokens
+        (, int96 flowrate, , ) = _cfa.getFlow(token, origin, msg.sender);
+        require(flowrate > 0, "origin isn't streaming to you");
+
+        int96 alreadyInvested = _investments[origin][msg.sender];
+        require(
+            alreadyInvested < flowrate,
+            "you have invested the full flowrate"
         );
-        //reinstantiate original flow
-        cfaV1._increaseFlowByOperator(
-            _cfa,
-            meta.token,
-            meta.origin,
-            meta.receiver,
-            meta.flowrate
-        );
+
+        niflots[nextId] = NiflotMetadata({
+            origin: origin,
+            receiver: msg.sender,
+            flowrate: flowrate - alreadyInvested,
+            token: token,
+            duration: durationInSeconds,
+            started: 0
+        });
+
+        //will start streaming from niflot to msg.sender / receiver
+        _mint(msg.sender, nextId);
+        nextId += 1;
     }
 
     function _beforeTokenTransfer(
@@ -160,18 +138,36 @@ contract Niflot is ERC721, Ownable {
         );
 
         NiflotMetadata memory meta = niflots[tokenId];
+
+        require(
+            newReceiver != meta.origin,
+            "can't transfer a niflot to its origin"
+        );
+
         if (oldReceiver == address(0)) {
             //minted
-            cfaV1._increaseFlow(_cfa, meta.token, newReceiver, meta.flowrate);
+            _investments[meta.origin][newReceiver] += meta.flowrate;
         } else if (newReceiver == address(0)) {
-            //burnt
-            cfaV1._decreaseFlow(_cfa, meta.token, oldReceiver, meta.flowrate);
-            _recoverOriginalFlow(tokenId);
+            _investments[meta.origin][oldReceiver] -= meta.flowrate;
             delete niflots[tokenId];
+
+            //burnt
+            cfaV1._decreaseFlowByOperator(
+                _cfa,
+                meta.token,
+                meta.origin,
+                oldReceiver,
+                meta.flowrate
+            );
+            cfaV1._increaseFlowByOperator(
+                _cfa,
+                meta.token,
+                meta.origin,
+                meta.receiver,
+                meta.flowrate
+            );
         } else {
-            if (newReceiver == meta.origin) {
-                revert("can't transfer a niflot to its origin");
-            }
+            //transfer
             if (meta.started == 0) {
                 niflots[tokenId].started = block.timestamp;
                 emit NiflotStarted(
@@ -186,9 +182,24 @@ contract Niflot is ERC721, Ownable {
                 }
             }
 
+            _investments[meta.origin][oldReceiver] -= meta.flowrate;
+            _investments[meta.origin][newReceiver] += meta.flowrate;
+
             //handover flow
-            cfaV1._decreaseFlow(_cfa, meta.token, oldReceiver, meta.flowrate);
-            cfaV1._increaseFlow(_cfa, meta.token, newReceiver, meta.flowrate);
+            cfaV1._decreaseFlowByOperator(
+                _cfa,
+                meta.token,
+                meta.origin,
+                oldReceiver,
+                meta.flowrate
+            );
+            cfaV1._increaseFlowByOperator(
+                _cfa,
+                meta.token,
+                meta.origin,
+                newReceiver,
+                meta.flowrate
+            );
         }
     }
 
