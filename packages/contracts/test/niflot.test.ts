@@ -131,7 +131,7 @@ describe("niflot", async function () {
       await niflot.mint(daix.address, origin.address, 3600);
       expect.fail("could mint a niflot even though I already received one");
     } catch (e: any) {
-      expect(e.message).to.contain("origin isn't streaming to you");
+      expect(e.message).to.contain("you have invested the full flowrate");
     }
   });
 
@@ -266,7 +266,7 @@ describe("niflot", async function () {
 
     const niflotMatureInSeconds = endsAt.sub(chainTime);
     expect(niflotMatureInSeconds.toNumber()).lt(3600);
-    console.debug("niflot mature in %s seconds", niflotMatureInSeconds);
+    //console.debug("niflot mature in %s seconds", niflotMatureInSeconds);
 
     //advance blockchain time past maturity date
     ethers.provider.send("evm_increaseTime", [3600]);

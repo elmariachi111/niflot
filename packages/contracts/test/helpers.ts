@@ -12,6 +12,7 @@ import deploySuperToken from "@superfluid-finance/ethereum-contracts/scripts/dep
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Contract } from "ethers";
+import { BaseProvider } from "@ethersproject/providers";
 
 const errorHandler = (err: any) => {
   if (err) throw err;
@@ -21,6 +22,10 @@ export async function preTest(): Promise<{
   sf: Framework;
   dai: Contract;
   daix: WrapperSuperToken;
+  expectNetFlowrateEqualsEth: (
+    address: string | SignerWithAddress,
+    expected: string
+  ) => Promise<void>;
 }> {
   //get accounts from hardhat
   const accounts = await ethers.getSigners();
@@ -39,7 +44,7 @@ export async function preTest(): Promise<{
     from: accounts[0].address,
   });
   //deploy a fake erc20 wrapper super token around the fDAI token
-  let fDAIxAddress = await deploySuperToken(errorHandler, [":", "fDAI"], {
+  await deploySuperToken(errorHandler, [":", "fDAI"], {
     web3,
     from: accounts[0].address,
   });
@@ -51,10 +56,10 @@ export async function preTest(): Promise<{
     protocolReleaseVersion: "test",
   });
 
-  const superSigner = sf.createSigner({
-    signer: accounts[0],
-    provider: ethers.provider,
-  });
+  // const superSigner = sf.createSigner({
+  //   signer: accounts[0],
+  //   provider: ethers.provider,
+  // });
 
   //use the framework to get the super token
   const daix = (await sf.loadSuperToken("fDAIx")) as WrapperSuperToken;
@@ -63,21 +68,43 @@ export async function preTest(): Promise<{
   await dai
     .connect(accounts[0])
     .mint(accounts[0].address, ethers.utils.parseEther("10000"));
+
   await dai
     .connect(accounts[0])
     .approve(daix.address, ethers.utils.parseEther("10000"));
-  const daixUpgradeOperation = daix.upgrade({
-    amount: ethers.utils.parseEther("10000").toHexString(),
-  });
-  await daixUpgradeOperation.exec(accounts[0]);
-  const daiBal = await daix.balanceOf({
-    account: accounts[0].address,
-    providerOrSigner: accounts[0],
-  });
+
+  await daix
+    .upgrade({
+      amount: ethers.utils.parseEther("10000").toHexString(),
+    })
+    .exec(accounts[0]);
 
   return {
     sf,
     dai,
     daix,
+    expectNetFlowrateEqualsEth: expectNetFlowrateEqualsEth(
+      sf,
+      daix,
+      ethers.provider
+    ),
   };
 }
+
+const expectNetFlowrateEqualsEth = (
+  sf: Framework,
+  token: WrapperSuperToken,
+  provider: BaseProvider
+) => {
+  return async (
+    address: string | SignerWithAddress,
+    expected: string
+  ): Promise<void> => {
+    const netFlowrate = await sf.cfaV1.getNetFlow({
+      superToken: token.address,
+      account: typeof address === "string" ? address : address.address,
+      providerOrSigner: provider,
+    });
+    expect(netFlowrate).to.eq(ethers.utils.parseEther(expected).toString());
+  };
+};
