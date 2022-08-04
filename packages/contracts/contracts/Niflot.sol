@@ -223,21 +223,59 @@ contract Niflot is ERC721, Ownable {
         }
     }
 
-    function endsAt(uint256 tokenId) public view returns (uint256) {
+    function endsAt(uint256 tokenId)
+        public
+        view
+        exists(tokenId)
+        returns (uint256)
+    {
         if (niflots[tokenId].started == 0) return 0;
 
         return niflots[tokenId].started + niflots[tokenId].duration;
     }
 
-    function isMature(uint256 tokenId) public view returns (bool) {
+    function isMature(uint256 tokenId)
+        public
+        view
+        exists(tokenId)
+        returns (bool)
+    {
         uint256 _endsAt = endsAt(tokenId);
         if (_endsAt == 0) return false;
         return (_endsAt < block.timestamp);
     }
 
+    function remainingValue(uint256 tokenId)
+        public
+        view
+        exists(tokenId)
+        returns (ISuperToken token, uint256 value)
+    {
+        NiflotMetadata memory meta = niflots[tokenId];
+        assert(meta.flowrate > 0);
+
+        token = meta.token;
+        int256 remainingSeconds;
+        if (meta.started == 0) {
+            remainingSeconds = int256(meta.duration);
+        } else {
+            remainingSeconds =
+                int256(meta.started) +
+                int256(meta.duration) -
+                int256(block.timestamp);
+        }
+
+        if (remainingSeconds <= 0) {
+            value = 0;
+        } else {
+            value = uint256(remainingSeconds) * uint256(uint96(meta.flowrate));
+        }
+    }
+
     function getNiflotData(uint256 tokenId)
         public
         view
+        exists(tokenId)
         returns (
             address origin,
             address receiver,
@@ -248,7 +286,6 @@ contract Niflot is ERC721, Ownable {
             int96 flowrate
         )
     {
-        require(_exists(tokenId));
         NiflotMetadata memory meta = niflots[tokenId];
         return (
             meta.origin,
