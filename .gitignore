@@ -28,4 +28,4 @@ foundry.toml
 *-workspace
 .npmrc
 
-
+*.notes
