@@ -104,6 +104,22 @@ contract Niflot is ERC721, Ownable {
     }
 
     /**
+     * @notice aka the "fire an employee" use case.
+     */
+    function cancelByOrigin(uint256 tokenId) external exists(tokenId) {
+        NiflotMetadata memory meta = niflots[tokenId];
+
+        require(msg.sender == meta.origin, "only origin can call this");
+        _burn(tokenId);
+
+        emit NiflotTerminated(
+            tokenId,
+            niflots[tokenId].origin,
+            niflots[tokenId].receiver
+        );
+    }
+
+    /**
      * todo: potentially add a dedicated flowrate so don't have to sell everything at once.
      * @param token the currency this Niflot is based on
      * @param origin the source that streams `token` to your account
