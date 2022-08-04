@@ -135,6 +135,16 @@ describe("niflot", async function () {
     }
   });
 
+  it("cannot mint a niflot with a runtime longer than a month", async () => {
+    let niflot = Niflot.connect(receiver);
+    try {
+      await niflot.mint(daix.address, origin.address, 60 * 60 * 24 * 30 + 1);
+      expect.fail("could mint a niflot that runs longer than max duration");
+    } catch (e: any) {
+      expect(e.message).to.contain("niflot duration exceeds one month");
+    }
+  });
+
   it("a niflot holder can't mint a niflot of a niflot", async () => {
     let niflot = Niflot.connect(investor);
     try {

@@ -19,6 +19,9 @@ struct NiflotMetadata {
     int96 flowrate;
 }
 
+// A Niflot's maximum duration is one month.
+uint256 constant MAX_DURATION_SECONDS = 60 * 60 * 24 * 30;
+
 contract Niflot is ERC721, Ownable {
     using CFAv1Library for CFAv1Library.InitData;
     using IncDec for CFAv1Library.InitData;
@@ -46,7 +49,9 @@ contract Niflot is ERC721, Ownable {
     //todo: unused, do we need it anyway?!
     mapping(ISuperToken => bool) private _acceptedTokens;
 
-    //origin => investor => bought flowrate
+    /**
+     * @dev origin => investor => total acquired flowrate
+     */
     mapping(address => mapping(address => int96)) private _investments;
 
     uint256 public nextId;
@@ -80,6 +85,9 @@ contract Niflot is ERC721, Ownable {
         _acceptedTokens[token] = accept;
     }
 
+    /**
+     * @dev anyone can call this method at any time. Will revert if niflot is not mature. See _beforeTokenTransfer for the handover process.
+     */
     function burn(uint256 tokenId) external {
         require(
             niflots[tokenId].started == 0 || isMature(tokenId),
@@ -95,13 +103,24 @@ contract Niflot is ERC721, Ownable {
         );
     }
 
-    //todo: potentially add a dedicated flowrate so don't have to sell everything at once.
+    /**
+     * todo: potentially add a dedicated flowrate so don't have to sell everything at once.
+     * @param token the currency this Niflot is based on
+     * @param origin the source that streams `token` to your account
+     * @param durationInSeconds how long this Niflot will run after it's been transferred for the first time
+     */
     function mint(
         ISuperToken token,
         address origin,
         uint256 durationInSeconds
     ) external {
         //todo check if token is in _acceptedTokens
+
+        require(
+            MAX_DURATION_SECONDS >= durationInSeconds,
+            "niflot duration exceeds one month"
+        );
+
         (, int96 flowrate, , ) = _cfa.getFlow(token, origin, msg.sender);
         require(flowrate > 0, "origin isn't streaming to you");
 
@@ -148,6 +167,7 @@ contract Niflot is ERC721, Ownable {
             //minted
             _investments[meta.origin][newReceiver] += meta.flowrate;
         } else if (newReceiver == address(0)) {
+            //burnt
             _investments[meta.origin][oldReceiver] -= meta.flowrate;
             delete niflots[tokenId];
 
