@@ -28,10 +28,14 @@ async function main() {
     from: admin.address,
   });
 
-  console.log(fwResult, process.env.RESOLVER_ADDRESS, fDAI, fDAIx);
+  console.log({ resolver: process.env.RESOLVER_ADDRESS, fDAI, fDAIx });
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+main()
+  .catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  })
+  .then(() => {
+    process.exit(0);
+  });

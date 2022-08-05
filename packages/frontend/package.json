@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@niflot/contracts": "^0.0.2",
     "@chakra-ui/react": "^2.2.4",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",

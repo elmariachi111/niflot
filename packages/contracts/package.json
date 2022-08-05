@@ -2,8 +2,10 @@
   "name": "@niflot/contracts",
   "version": "0.0.2",
   "scripts": {
-    "typechain": "hardhat typechain"
+    "typechain": "hardhat typechain",
+    "build": "hardhat compile && hardhat typechain && tsc -p tsconfig.typechain.json"
   },
+  "main": "dist/index.js",
   "devDependencies": {
     "@typechain/ethers-v5": "^10.1.0",
     "@typechain/hardhat": "^6.1.2",

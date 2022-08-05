@@ -33,21 +33,6 @@ async function main() {
   });
 
   await daixUpgradeOperation.exec(origin);
-
-  await daix
-    .transferFrom({
-      sender: await origin.getAddress(),
-      receiver: process.env.SF_NIFLOT as string,
-      amount: ethers.utils.parseEther("200").toString(),
-    })
-    .exec(origin);
-
-  const daixBal = await daix.balanceOf({
-    account: process.env.SF_NIFLOT as string,
-    providerOrSigner: origin,
-  });
-
-  console.log(`daix ${daix.address} balance for niflot contract: `, daixBal);
 }
 
 main().catch((error) => {
