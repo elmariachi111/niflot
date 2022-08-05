@@ -1,17 +1,14 @@
-import React from "react";
-import { Button, Container, Flex, Text } from "@chakra-ui/react";
-import { useWeb3 } from "./context/Web3Context";
+import { Container, Flex, Heading } from "@chakra-ui/react";
+import { Account } from "./atoms/Account";
 
 export default function Layout({ children }) {
-  const { connect, account, chainId } = useWeb3();
   return (
-    <Container>
-      <Text>{chainId}</Text>
-      {account ? (
-        <Text>{account}</Text>
-      ) : (
-        <Button onClick={connect}>connect</Button>
-      )}
+    <Container maxW="container.lg">
+      <Flex direction="row" justify="space-between">
+        <Heading py={4}>Niflot</Heading>
+
+        <Account />
+      </Flex>
       <Flex>{children}</Flex>
     </Container>
   );

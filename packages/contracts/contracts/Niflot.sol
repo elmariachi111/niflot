@@ -284,6 +284,7 @@ contract Niflot is ERC721, Ownable {
         if (remainingSeconds <= 0) {
             value = 0;
         } else {
+            //todo consider using SafeCast
             value = uint256(remainingSeconds) * uint256(uint96(meta.flowrate));
         }
     }

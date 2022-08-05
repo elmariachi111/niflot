@@ -1,18 +1,13 @@
-import { Flex, Heading } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import type { NextPage } from "next";
-import { NiflotProvider } from "../components/context/NiflotContext";
-import { SFBalance } from "../components/molecules/SFBalance";
+import Link from "next/link";
 
 const Home: NextPage = () => {
   return (
-    <>
-      <NiflotProvider>
-        <Heading>Niflot</Heading>
-        <Flex>
-          <SFBalance />
-        </Flex>
-      </NiflotProvider>
-    </>
+    <Flex direction="row" gap={8}>
+      <Link href="/origin">for origins</Link>
+      <Link href="/receiver">for receivers</Link>
+    </Flex>
   );
 };
 
