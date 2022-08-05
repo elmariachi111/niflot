@@ -5,9 +5,12 @@ import {
   FormHelperText,
   FormLabel,
   Input,
+  InputGroup,
+  InputRightElement,
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
 import { useState } from "react";
+import { AccountBlockie } from "../atoms/Account";
 import { useSuperfluid } from "../context/SuperfluidContext";
 import { useWeb3 } from "../context/Web3Context";
 
@@ -38,13 +41,20 @@ export const StartFlow = () => {
     <Flex direction="row" gap={8}>
       <FormControl flex={2}>
         <FormLabel>receiver</FormLabel>
-        <Input
-          type="text"
-          placeholder="0x00"
-          name="receiver"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-        />
+        <InputGroup>
+          <Input
+            type="text"
+            placeholder="0x00"
+            name="receiver"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+          />
+          {address && (
+            <InputRightElement>
+              <AccountBlockie account={address} scale={0.65} />
+            </InputRightElement>
+          )}
+        </InputGroup>
         <FormHelperText>
           0xdD2FD4581271e230360230F9337D5c0430Bf44C0
           <br />

@@ -1,4 +1,4 @@
-import { Flex, Text } from "@chakra-ui/react";
+import { Button, Flex, Text } from "@chakra-ui/react";
 import { IWeb3FlowInfo } from "@superfluid-finance/sdk-core";
 import { useEffect, useState } from "react";
 import { useSuperfluid } from "../context/SuperfluidContext";
@@ -7,6 +7,7 @@ export const ActiveFlows = () => {
   const { account, provider } = useWeb3();
   const { sf } = useSuperfluid();
   const [flowInfo, setFlowInfo] = useState<IWeb3FlowInfo>();
+
   useEffect(() => {
     if (!sf || !account || !provider) return;
     (async () => {

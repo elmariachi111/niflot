@@ -13,10 +13,24 @@ import { useEffect, useState } from "react";
 import Blockies from "react-blockies";
 import { useWeb3 } from "../context/Web3Context";
 
+export const AccountBlockie = ({
+  account,
+  scale,
+}: {
+  account: string;
+  scale?: number;
+}) => {
+  return (
+    <Circle size="2.75em" overflow="hidden" transform={`scale(${scale || 1})`}>
+      <Blockies seed={account.toLowerCase()} size={8} scale={6} />
+    </Circle>
+  );
+};
+
 export function truncateAddress(address: string) {
   const [first, last] = [
     address.substring(0, 6),
-    address.substring(address.length - 3, 3),
+    address.substring(address.length - 4, address.length),
   ];
   return `${first}..${last}`;
 }
@@ -25,9 +39,7 @@ const Identicon = forwardRef((props, ref) => {
   const { account, ...rest } = props;
   return (
     <Button ref={ref} p={0} {...rest}>
-      <Circle size="2.75em" overflow="hidden">
-        <Blockies seed={account.toLowerCase()} size={8} scale={6} />
-      </Circle>
+      <AccountBlockie account={account} />
     </Button>
   );
 });

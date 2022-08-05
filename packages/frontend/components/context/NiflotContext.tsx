@@ -14,18 +14,18 @@ const NiflotContext = React.createContext<INiflotContext>({
 const useNiflot = () => useContext(NiflotContext);
 
 const NiflotProvider = ({ children }: { children: React.ReactNode }) => {
-  const { provider } = useWeb3();
+  const { signer } = useWeb3();
   const [niflot, setNiflot] = useState<Niflot>();
 
   useEffect(() => {
-    if (!provider) return;
+    if (!signer) return;
     setNiflot(
       Niflot__factory.connect(
         process.env.NEXT_PUBLIC_NIFLOT_CONTRACT as string,
-        provider
+        signer
       )
     );
-  }, [provider]);
+  }, [signer]);
 
   return (
     <NiflotContext.Provider value={{ niflot }}>
