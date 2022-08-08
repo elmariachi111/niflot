@@ -3,7 +3,11 @@
   "version": "0.0.2",
   "scripts": {
     "typechain": "hardhat typechain",
-    "build": "hardhat compile && hardhat typechain && tsc -p tsconfig.typechain.json"
+    "build": "hardhat compile && hardhat typechain && tsc -p tsconfig.typechain.json",
+    "deploy:framework": "hardhat run scripts/1_deployFramework.ts",
+    "deploy:niflot": "hardhat run scripts/2_deployNiflot.ts",
+    "deploy:mintTokens": "hardhat run scripts/3_mintTokens.ts",
+    "deploy": "HARDHAT_NETWORK=localhost run-s deploy:framework deploy:niflot deploy:mintTokens"
   },
   "main": "dist/index.js",
   "devDependencies": {
