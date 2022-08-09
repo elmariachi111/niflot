@@ -34,14 +34,8 @@ export const MintNiflot = () => {
 
   const toast = useToast();
 
-  // const MAX_DATE = useMemo(() => {
-  //   const now = new Date();
-  //   const ONE_MONTH = 60 * 60 * 24 * 31 * 1000;
-  //   return new Date(now.getTime() + ONE_MONTH);
-  // }, []);
-
   const MIN_DURATION_HOURS = 24;
-  const MAX_DURATION_HOURS = 24 * 31;
+  const MAX_DURATION_HOURS = 24 * 30;
 
   useEffect(() => {
     if (!sf || !account || !signer || !origin) {
@@ -125,7 +119,7 @@ export const MintNiflot = () => {
             21d
           </SliderMark>
           <SliderMark value={MAX_DURATION_HOURS} mt="1" ml="-2.5" fontSize="sm">
-            31d
+            30d
           </SliderMark>
           <SliderTrack>
             <SliderFilledTrack />
