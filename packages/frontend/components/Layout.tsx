@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Container, Flex, Text } from "@chakra-ui/react";
 import { useWeb3 } from "./context/Web3Context";
 
-export default function Layout({ children }) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   const { connect, account, chainId } = useWeb3();
   return (
     <Container>
