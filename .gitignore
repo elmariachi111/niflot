@@ -29,3 +29,4 @@ foundry.toml
 .npmrc
 
 *.notes
+.vercel
