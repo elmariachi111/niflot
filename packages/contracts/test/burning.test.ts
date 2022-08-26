@@ -23,7 +23,6 @@ let expectNetFlowrateEqualsEth: (
 let Niflot: Niflot;
 
 const receiverFlowRate = ethers.utils.parseEther("0.01");
-const colleagueFlowRate = ethers.utils.parseEther("0.003");
 
 before(async function () {
   ({ sf, dai, daix, expectNetFlowrateEqualsEth } = await preTest());

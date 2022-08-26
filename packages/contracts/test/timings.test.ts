@@ -52,8 +52,6 @@ before(async function () {
     .exec(origin);
 });
 
-beforeEach(async function () {});
-
 describe("Niflots lose value over time", async function () {
   it("initially has 100% value", async () => {
     await sf.cfaV1
@@ -98,4 +96,6 @@ describe("Niflots lose value over time", async function () {
 
     expect(remainingValue.toString()).to.eq("0");
   });
+
+  it("can ");
 });
