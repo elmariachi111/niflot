@@ -67,16 +67,24 @@ export const MintNiflot = () => {
     if (!niflot || !durationHours || !origin) return;
 
     const durationSeconds = durationHours * 60 * 60;
-    const result = await niflot.mint(
-      process.env.NEXT_PUBLIC_DAIX as string,
-      origin,
-      durationSeconds
-    );
-    console.log(result);
-    toast({
-      status: "info",
-      title: "niflot minted",
-    });
+    try {
+      const result = await niflot.mint(
+        process.env.NEXT_PUBLIC_DAIX as string,
+        origin,
+        durationSeconds
+      );
+      console.log(result);
+      toast({
+        status: "info",
+        title: "niflot minted",
+      });
+    } catch (e: any) {
+      toast({
+        status: "error",
+        title: "couldn't mint niflot",
+        description: e.message,
+      });
+    }
   };
 
   return (

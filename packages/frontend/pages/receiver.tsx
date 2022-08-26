@@ -3,6 +3,7 @@ import type { NextPage } from "next";
 import { SFBalance } from "../components/molecules/SFBalance";
 import { ActiveFlows } from "../components/organisms/ActiveFlows";
 import { MintNiflot } from "../components/organisms/MintNiflot";
+import { YourNiflots } from "../components/organisms/YourNiflots";
 
 const Receiver: NextPage = () => {
   return (
@@ -27,6 +28,10 @@ const Receiver: NextPage = () => {
       <Flex direction="column" gap={2}>
         <Heading size="md">Mint a Niflot</Heading>
         <MintNiflot />
+      </Flex>
+      <Flex direction="column" gap={2}>
+        <Heading size="md">Your Niflots</Heading>
+        <YourNiflots />
       </Flex>
     </Flex>
   );
